@@ -46,7 +46,10 @@ const pickNextWord = () => {
 };
 
 const tryWord = () => {
-  if (solved || (tries >= 6)) return;
+  if (solved || (tries >= 6)) {
+    localStorage.clear();
+    return;
+  }
   const word = pickNextWord();
   typeWord(word);
   submitWord();
@@ -68,5 +71,3 @@ fetch('https://api.github.com/gists/a03ef2cba789d8cf00c08f767e0fad7b')
       tryWord();
   });
 });
-
-localStorage.clear();
