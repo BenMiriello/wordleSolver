@@ -1,5 +1,7 @@
 localStorage.clear();
 
+const alphabet = {};
+
 const ga = document.querySelector('game-app');
 ga.shadowRoot.querySelector('game-modal').remove();
 const board = ga.$board;
@@ -15,7 +17,30 @@ const enter = Array.from(keyboard.children)
 
 const clickKey = char => keys.find(k => k.dataset.key === char).click();
 const typeWord = word => word.split('').forEach(clickKey);
-const submitWord = () => enter.click();
+const submitWord = () => {
+  enter.click();
+  setTimeout(() => {
+    resetAlphabet();
+    updateAlphabet()
+  })
+}
+
+const resetAlphabet = () => {
+  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => alphabet[letter] = null);
+}
+
+const updateAlphabet = () => {
+  const words = Array.from(board.querySelectorAll('game-row'));
+  words.map(word => Array.from(word.$row.children).map((cell, i) => {
+    const letter = cell.getAttribute('letter');
+    if (letter) {
+      if (!alphabet[letter]) alphabet[letter] = [];
+      alphabet[letter][i] = cell.getAttribute('evaluation');
+    }
+  }));
+};
 
 typeWord('crane');
 submitWord();
+
+localStorage.clear();
