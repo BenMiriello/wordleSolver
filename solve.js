@@ -12,6 +12,9 @@ const triedAlready = [];
 let solved = false;
 let tries = 0;
 
+const triesBeforeOnlyUsingAnswerWords = 2;
+const triesBeforeRequiringKnownCorrectLetters = 2;
+
 const ga = document.querySelector('game-app');
 ga.shadowRoot.querySelector('game-modal').remove();
 const board = ga.$board;
@@ -78,7 +81,7 @@ const pickNextWord = () => {
   let set = starters;
   if (tries === 0) {
     set = starters;
-  } else if (tries < 3) {
+  } else if (tries < triesBeforeOnlyUsingAnswerWords) {
     set = allowed;
   } else {
     set = answers;
@@ -101,7 +104,9 @@ const shouldSkip = word => {
   if (word.split('').find((letter, i) => {
     if (keyboardAlphabet[letter] === 'absent') return true;
     if (alphabet[letter] && alphabet[letter][i] === 'present') return true;
-    if (correctLetters[i] && correctLetters[i] !== letter) return true;
+    if (tries > (triesBeforeRequiringKnownCorrectLetters - 1)) {
+      if (correctLetters[i] && correctLetters[i] !== letter) return true;
+    }
   })) {
     return true;
   }
