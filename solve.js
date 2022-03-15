@@ -73,16 +73,6 @@ const tryWord = () => {
   }, 3000);
 };
 
-const isValidGuess = (word) => {
-  if (!word) return false;
-  if (triedAlready.includes(word)) return false;
-  if (word.split('').find((letter, i) => {
-    if (keyboardLetters[letter] === 'absent') return true;
-    if (correctLetters[i] && correctLetters[i] !== letter) return true;
-  })) return false;
-  return true;
-};
-
 const pickNextWord = () => {
   let word = '';
   let set = starters;
@@ -98,6 +88,18 @@ const pickNextWord = () => {
   }
   tries += 1;
   return word;
+};
+
+const isValidGuess = (word) => {
+  if (!word) return false;
+  if (triedAlready.includes(word)) return false;
+  if (word.split('').find((letter, i) => {
+    if (keyboardLetters[letter] === 'absent') return true;
+    if (correctLetters[i] && correctLetters[i] !== letter) return true;
+  })) {
+    return false;
+  }
+  return true;
 };
 
 const solve = () => {
