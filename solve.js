@@ -7,6 +7,7 @@ let answers;
 const alphabet = {};
 const keyboardLetters = {};
 const correctLetters = [];
+const triedAlready = [];
 let solved = false;
 let tries = 0;
 
@@ -52,7 +53,6 @@ const updateKeyboardLetters = () => {
   keys.forEach(key => {
     keyboardLetters[key.dataset.key] = key.dataset.state;
   });
-  console.log(keyboardLetters);
 };
 
 const resetAlphabet = (alphabet) => {
@@ -65,6 +65,7 @@ const tryWord = () => {
     return;
   }
   const word = pickNextWord();
+  triedAlready.push(word);
   typeWord(word);
   submitWord();
   setTimeout(() => {
@@ -74,6 +75,7 @@ const tryWord = () => {
 
 const isValidGuess = (word) => {
   if (!word) return false;
+  if (triedAlready.includes(word)) return false;
   if (word.split('').find((letter, i) => {
     if (keyboardLetters[letter] === 'absent') return true;
     if (correctLetters[i] && correctLetters[i] !== letter) return true;
@@ -82,7 +84,7 @@ const isValidGuess = (word) => {
 };
 
 const pickNextWord = () => {
-  let word;
+  let word = '';
   let set = starters;
   if (tries === 0) {
     set = starters;
