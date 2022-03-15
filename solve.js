@@ -5,6 +5,7 @@ let allowed;
 let answers;
 
 const alphabet = {};
+const keyboardLetters = {};
 let solved = false;
 let tries = 0;
 
@@ -24,15 +25,14 @@ const clickKey = char => keys.find(k => k.dataset.key === char).click();
 const typeWord = word => word.split('').forEach(clickKey);
 const submitWord = () => {
   enter.click();
-  setTimeout(updateAlphabet);
-};
-
-const resetAlphabet = () => {
-  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => alphabet[letter] = null);
+  setTimeout(() => {
+    updateAlphabet();
+    updateKeyboardLetters();
+  }, 2500);
 };
 
 const updateAlphabet = () => {
-  resetAlphabet();
+  resetAlphabet(alphabet);
   const words = Array.from(board.querySelectorAll('game-row'));
   words.map(word => Array.from(word.$row.children).map((cell, i) => {
     const letter = cell.getAttribute('letter');
@@ -41,6 +41,18 @@ const updateAlphabet = () => {
       alphabet[letter][i] = cell.getAttribute('evaluation');
     }
   }));
+};
+
+const updateKeyboardLetters = () => {
+  resetAlphabet(keyboardLetters);
+  keys.forEach(key => {
+    keyboardLetters[key.dataset.key] = key.dataset.state;
+  });
+  console.log(keyboardLetters);
+};
+
+const resetAlphabet = (alphabet) => {
+  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => alphabet[letter] = null);
 };
 
 const tryWord = () => {
@@ -58,8 +70,16 @@ const tryWord = () => {
 
 const isValidGuess = (word) => {
   if (!word) return false;
+  if (word.split('').find((letter) => {
+    if (keyboardLetters[letter] === 'absent') return true;
+  })) return false;
   return true;
-}
+};
+
+'asdf'.split('').forEach((letter, i) => {
+  if (letter === 's') return false;
+  console.log('true');
+});
 
 const pickNextWord = () => {
   let word;
