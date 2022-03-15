@@ -6,6 +6,7 @@ let answers;
 
 const alphabet = {};
 const keyboardLetters = {};
+const correctLetters = [];
 let solved = false;
 let tries = 0;
 
@@ -39,6 +40,9 @@ const updateAlphabet = () => {
     if (letter) {
       if (!alphabet[letter]) alphabet[letter] = [];
       alphabet[letter][i] = cell.getAttribute('evaluation');
+      if (alphabet[letter][i] === 'correct') {
+        correctLetters[i] = letter;
+      }
     }
   }));
 };
@@ -70,16 +74,12 @@ const tryWord = () => {
 
 const isValidGuess = (word) => {
   if (!word) return false;
-  if (word.split('').find((letter) => {
+  if (word.split('').find((letter, i) => {
     if (keyboardLetters[letter] === 'absent') return true;
+    if (correctLetters[i] && correctLetters[i] !== letter) return true;
   })) return false;
   return true;
 };
-
-'asdf'.split('').forEach((letter, i) => {
-  if (letter === 's') return false;
-  console.log('true');
-});
 
 const pickNextWord = () => {
   let word;
