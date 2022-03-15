@@ -6,7 +6,7 @@ let allowed;
 let answers;
 
 const alphabet = {};
-const keyboardLetters = {};
+const keyboardAlphabet = {};
 const correctLetters = [];
 const triedAlready = [];
 let solved = false;
@@ -29,12 +29,12 @@ const submitWord = () => {
   enter.click();
   setTimeout(() => {
     updateAlphabet();
-    updateKeyboardLetters();
+    updateKeyboardAlphabet();
   }, 2500);
 };
 
 const updateAlphabet = () => {
-  resetAlphabet(alphabet);
+  resetLetterGroup(alphabet);
   const words = Array.from(board.querySelectorAll('game-row'));
   words.map(word => Array.from(word.$row.children).map((cell, i) => {
     const letter = cell.getAttribute('letter');
@@ -48,15 +48,15 @@ const updateAlphabet = () => {
   }));
 };
 
-const updateKeyboardLetters = () => {
-  resetAlphabet(keyboardLetters);
+const updateKeyboardAlphabet = () => {
+  resetLetterGroup(keyboardAlphabet);
   keys.forEach(key => {
-    keyboardLetters[key.dataset.key] = key.dataset.state;
+    keyboardAlphabet[key.dataset.key] = key.dataset.state;
   });
 };
 
-const resetAlphabet = (alphabet) => {
-  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => alphabet[letter] = null);
+const resetLetterGroup = group => {
+  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => group[letter] = null);
 };
 
 const tryWord = () => {
@@ -74,7 +74,7 @@ const tryWord = () => {
 };
 
 const pickNextWord = () => {
-  let word = '';
+  let word;
   let set = starters;
   if (tries === 0) {
     set = starters;
@@ -90,18 +90,22 @@ const pickNextWord = () => {
   return word;
 };
 
-const isValidGuess = (word) => {
+const isValidGuess = word => {
   if (!word) return false;
   if (triedAlready.includes(word)) return false;
+  if (shouldSkip(word)) return false;
+  return true;
+};
+
+const shouldSkip = word => {
   if (word.split('').find((letter, i) => {
-    if (keyboardLetters[letter] === 'absent') return true;
+    if (keyboardAlphabet[letter] === 'absent') return true;
     if (alphabet[letter] && alphabet[letter][i] === 'present') return true;
     if (correctLetters[i] && correctLetters[i] !== letter) return true;
   })) {
-    return false;
+    return true;
   }
-  return true;
-};
+}
 
 const solve = () => {
   fetch('https://api.github.com/gists/a03ef2cba789d8cf00c08f767e0fad7b')
