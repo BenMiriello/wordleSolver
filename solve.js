@@ -1,10 +1,12 @@
 localStorage.clear();
 
+const starters = ['slate', 'sauce', 'slice', 'shale', 'saute', 'share', 'sooty', 'shine', 'suite', 'crane', 'reais', 'blahs', 'centu', 'doggo', 'arose', 'earls', 'laser', 'reals', 'aloes'];
+let allowed;
+let answers;
+
 const alphabet = {};
 let solved = false;
 let tries = 0;
-let allowed;
-let answers;
 
 const ga = document.querySelector('game-app');
 ga.shadowRoot.querySelector('game-modal').remove();
@@ -41,10 +43,6 @@ const updateAlphabet = () => {
   }));
 };
 
-const pickNextWord = () => {
-  return allowed[Math.floor(Math.random() * allowed.length)];
-};
-
 const tryWord = () => {
   if (solved || (tries >= 6)) {
     localStorage.clear();
@@ -55,19 +53,43 @@ const tryWord = () => {
   submitWord();
   setTimeout(() => {
     tryWord();
-  }, 1000);
+  }, 3000);
+};
+
+const isValidGuess = (word) => {
+  if (!word) return false;
+  return true;
 }
 
-fetch('https://api.github.com/gists/a03ef2cba789d8cf00c08f767e0fad7b')
-.then(r => r.json())
-.then(res => {
-  answers = res.files['wordle-answers-alphabetical.txt'].content.split("\n");
+const pickNextWord = () => {
+  let word;
+  let set = starters;
+  if (tries === 0) {
+    set = starters;
+  } else if (tries < 3) {
+    set = allowed;
+  } else {
+    set = answers;
+  }
+  while (!isValidGuess(word)) {
+    word = set[Math.floor(Math.random() * set.length)];
+  }
+  tries += 1;
+  return word;
+};
 
-  fetch('https://api.github.com/gists/cdcdf777450c5b5301e439061d29694c')
-    .then(r => r.json())
-    .then(res => {
-      allowed = res.files['wordle-allowed-guesses.txt'].content.split("\n");
-
-      tryWord();
+const solve = () => {
+  fetch('https://api.github.com/gists/a03ef2cba789d8cf00c08f767e0fad7b')
+  .then(r => r.json())
+  .then(res => {
+    answers = res.files['wordle-answers-alphabetical.txt'].content.split("\n");
+    fetch('https://api.github.com/gists/cdcdf777450c5b5301e439061d29694c')
+      .then(r => r.json())
+      .then(res => {
+        allowed = res.files['wordle-allowed-guesses.txt'].content.split("\n");
+        tryWord();
+    });
   });
-});
+}
+
+solve();
