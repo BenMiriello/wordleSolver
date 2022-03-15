@@ -1,4 +1,5 @@
 localStorage.clear();
+setTimeout(() => {}, 250);
 
 const starters = ['slate', 'sauce', 'slice', 'shale', 'saute', 'share', 'sooty', 'shine', 'suite', 'crane', 'reais', 'blahs', 'centu', 'doggo', 'arose', 'earls', 'laser', 'reals', 'aloes'];
 let allowed;
@@ -16,7 +17,6 @@ ga.shadowRoot.querySelector('game-modal').remove();
 const board = ga.$board;
 const keyboard = ga.$keyboard.shadowRoot.children[1];
 
-// const rows = Array.from(ga.$board.children).map((c) => c.shadowRoot.children[1]);
 const keys = Array.from(keyboard.children)
   .flatMap(row => Array.from(row.children))
   .filter(btn => !(btn.classList.contains('one-and-a-half') || btn.classList.contains('spacer')));
@@ -95,6 +95,7 @@ const isValidGuess = (word) => {
   if (triedAlready.includes(word)) return false;
   if (word.split('').find((letter, i) => {
     if (keyboardLetters[letter] === 'absent') return true;
+    if (alphabet[letter] && alphabet[letter][i] === 'present') return true;
     if (correctLetters[i] && correctLetters[i] !== letter) return true;
   })) {
     return false;
